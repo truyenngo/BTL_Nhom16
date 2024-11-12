@@ -1,5 +1,6 @@
 package com.example.btl_nhom16;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     @Override
     public void onBindViewHolder(TaskViewHolder holder, int position) {
         Task task = taskList.get(position);
+        Log.d("TaskAdapter", "Binding task: " + task.getName());  // Log tên công việc
         holder.taskName.setText(task.getName());
         holder.taskDescription.setText(task.getDescription());
 
@@ -48,6 +50,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         taskList = newTaskList;
         notifyDataSetChanged();
     }
+
+
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder {
         TextView taskName;

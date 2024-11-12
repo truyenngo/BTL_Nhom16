@@ -2,7 +2,9 @@ package com.example.btl_nhom16;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class AddTaskActivity extends AppCompatActivity {
@@ -94,20 +97,22 @@ public class AddTaskActivity extends AppCompatActivity {
         }
 
         // Lưu công việc vào database
-        boolean isInserted = databaseHelper.insertTask(
-                taskName,
-                taskDescription,
-                startCalendar.getTimeInMillis(),
-                dueCalendar.getTimeInMillis()
-        );
 
+        boolean isInserted = databaseHelper.insertTask(taskName, taskDescription, startCalendar.getTimeInMillis(), dueCalendar.getTimeInMillis());
         if (isInserted) {
+            // Truy vấn để xác nhận công việc có trong cơ sở dữ liệu
+            List<Task> tasks = databaseHelper.getAllTasks();
+            Log.d("HomeActivity", "Tasks after insert: " + tasks.size());
             Toast.makeText(this, "Task added successfully", Toast.LENGTH_SHORT).show();
-            finish(); // Đóng Activity sau khi thêm thành công
+            Intent intent = new Intent(AddTaskActivity.this, HomeActivity.class);
+            startActivity(intent);
         } else {
             Toast.makeText(this, "Error adding task", Toast.LENGTH_SHORT).show();
         }
+
+
     }
+
 }
 
 

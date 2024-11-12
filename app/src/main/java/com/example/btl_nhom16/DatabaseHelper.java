@@ -77,18 +77,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_TASK_NAME, name);
         values.put(COLUMN_TASK_DESCRIPTION, description);
 
-        // Chuyển mốc thời gian (long) thành chuỗi ngày tháng (String)
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         String startDateString = sdf.format(new Date(startDate));
         String dueDateString = sdf.format(new Date(dueDate));
 
-        values.put(COLUMN_TASK_CREATION_DATE, startDateString); // Lưu ngày bắt đầu
-        values.put(COLUMN_TASK_DUE_DATE, dueDateString); // Lưu ngày hết hạn
+        values.put(COLUMN_TASK_CREATION_DATE, startDateString);
+        values.put(COLUMN_TASK_DUE_DATE, dueDateString);
 
         long result = db.insert(TABLE_TASKS, null, values);
         db.close();
+
+        Log.d("DatabaseHelper", "Insert result: " + result);  // Kiểm tra kết quả của insert
+
         return result != -1;
     }
+
 
 
     // Lấy danh sách công việc từ cơ sở dữ liệu
@@ -98,6 +101,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // Truy vấn dữ liệu
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TASKS, null);
+        Log.d("DatabaseHelper", "Query result count: " + cursor.getCount());  // Log số lượng bản ghi
 
         // Kiểm tra xem các cột có tồn tại không
         int columnTaskId = cursor.getColumnIndex(COLUMN_TASK_ID);
