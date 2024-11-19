@@ -1,43 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-    <!-- Tên công việc -->
-    <TextView
-        android:id="@+id/taskName"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="horizontal"
+    android:padding="5dp">
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Task Name"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
+        android:background="@drawable/button_border"
+        android:gravity="center"
+        android:orientation="horizontal">
 
-    <!-- Mô tả công việc -->
-    <TextView
-        android:id="@+id/taskDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Task Description"
-        android:textSize="14sp"
-        android:layout_marginBottom="8dp"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="10"
+            android:orientation="vertical"
+            android:paddingLeft="15dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp">
 
-    <!-- Trạng thái công việc -->
-    <TextView
-        android:id="@+id/taskStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Status: Pending"
-        android:textSize="14sp"
-        android:layout_marginBottom="8dp"
-        android:textColor="@android:color/holo_red_dark"/>
+            <!-- Tên công việc -->
+            <TextView
+                android:id="@+id/taskName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Task Name"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-    <!-- Ngày đến hạn công việc -->
-    <TextView
-        android:id="@+id/taskDueDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Due Date: 2024-11-12"
-        android:textSize="14sp"
-        android:textColor="@android:color/darker_gray" />
+            <!-- Mô tả công việc -->
+            <TextView
+                android:id="@+id/taskDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Task Description"
+                android:textSize="14sp" />
+
+            <!-- Trạng thái công việc -->
+            <TextView
+                android:id="@+id/taskStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Status: Pending"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="14sp" />
+
+            <!-- Ngày đến hạn công việc -->
+            <TextView
+                android:id="@+id/taskDueDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Due Date: 2024-11-12"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Icon yêu thích (star) -->
+        <ImageView
+            android:id="@+id/favoriteIcon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:contentDescription="Favorite"
+            android:src="@drawable/ic_star_empty" />
+    </LinearLayout>
 </LinearLayout>

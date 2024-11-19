@@ -60,8 +60,8 @@ public class AddTaskActivity extends AppCompatActivity {
             calendar.set(Calendar.YEAR, selectedYear);
             calendar.set(Calendar.MONTH, selectedMonth);
             calendar.set(Calendar.DAY_OF_MONTH, selectedDay);
-            textView.setText(getFormattedDate(calendar));
-            showTimePickerDialog(calendar, textView);
+            textView.setText(getFormattedDate(calendar));  // Hiển thị ngày đã chọn
+            showTimePickerDialog(calendar, textView);  // Mở TimePicker sau khi chọn ngày
         }, year, month, day);
 
         datePickerDialog.show();
@@ -75,7 +75,7 @@ public class AddTaskActivity extends AppCompatActivity {
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, selectedHour, selectedMinute) -> {
             calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
             calendar.set(Calendar.MINUTE, selectedMinute);
-            textView.append(" " + String.format("%02d:%02d", selectedHour, selectedMinute));
+            textView.setText(getFormattedDate(calendar) + " " + String.format("%02d:%02d", selectedHour, selectedMinute));  // Cập nhật thời gian vào TextView
         }, hour, minute, true);
 
         timePickerDialog.show();
@@ -87,6 +87,7 @@ public class AddTaskActivity extends AppCompatActivity {
         return sdf.format(calendar.getTime());
     }
 
+    // Lưu công việc vào cơ sở dữ liệu
     private void saveTask() {
         String taskName = editTextTaskName.getText().toString().trim();
         String taskDescription = editTextTaskDescription.getText().toString().trim();
@@ -96,23 +97,26 @@ public class AddTaskActivity extends AppCompatActivity {
             return;
         }
 
-        // Lưu công việc vào database
+        // Kiểm tra xem ngày bắt đầu có sau ngày đến hạn không
+        if (startCalendar.after(dueCalendar)) {
+            Toast.makeText(this, "Start date must be before due date", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        // Lưu công việc vào database
         boolean isInserted = databaseHelper.insertTask(taskName, taskDescription, startCalendar.getTimeInMillis(), dueCalendar.getTimeInMillis());
         if (isInserted) {
             // Truy vấn để xác nhận công việc có trong cơ sở dữ liệu
             List<Task> tasks = databaseHelper.getAllTasks();
-            Log.d("HomeActivity", "Tasks after insert: " + tasks.size());
+            Log.d("AddTaskActivity", "Tasks after insert: " + tasks.size());
             Toast.makeText(this, "Task added successfully", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(AddTaskActivity.this, HomeActivity.class);
             startActivity(intent);
         } else {
             Toast.makeText(this, "Error adding task", Toast.LENGTH_SHORT).show();
         }
-
-
     }
-
 }
+
 
 

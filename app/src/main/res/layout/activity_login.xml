@@ -24,21 +24,24 @@
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login"
-        android:onClick="loginUser" /> <!-- Gán sự kiện onClick trực tiếp trong XML -->
+        android:backgroundTint="#4CAF50"
+        android:onClick="loginUser"
+        android:text="Login" /> <!-- Gán sự kiện onClick trực tiếp trong XML -->
 
     <!-- Nút chuyển sang đăng ký -->
     <Button
         android:id="@+id/btnRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Go to Register"
-        android:onClick="goToRegister" /> <!-- Gán sự kiện cho nút đăng ký -->
+        android:backgroundTint="#FF9800"
+        android:onClick="goToRegister"
+        android:text="Go to Register" /> <!-- Gán sự kiện cho nút đăng ký -->
 
     <!-- Nút xóa dữ liệu (tùy chọn) -->
     <Button
         android:id="@+id/btnDeleteData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="#F44336"
         android:text="Delete All Data" />
 </LinearLayout>

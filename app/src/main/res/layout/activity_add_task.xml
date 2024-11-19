@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="#FF9800"
     android:orientation="vertical">
 
     <!-- Tên công việc -->
@@ -17,42 +18,45 @@
         android:id="@+id/editTextTaskDescription"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_marginTop="16dp"
         android:hint="Task Description"
-        android:inputType="textMultiLine"
-        android:layout_marginTop="16dp" />
+        android:inputType="textMultiLine" />
 
     <!-- Ngày bắt đầu -->
     <TextView
         android:id="@+id/textViewStartDate"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:hint="Start Date"
-        android:textColor="@android:color/darker_gray"
-        android:padding="8dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/search_background"
+        android:clickable="true"
         android:focusable="false"
-        android:clickable="true" />
+        android:hint="Start Date"
+        android:padding="8dp"
+        android:textColor="@android:color/darker_gray" />
 
     <!-- Ngày hạn hoàn thành -->
     <TextView
         android:id="@+id/textViewDueDate"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:hint="Due Date"
-        android:textColor="@android:color/darker_gray"
-        android:padding="8dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/search_background"
+        android:clickable="true"
         android:focusable="false"
-        android:clickable="true" />
+        android:hint="Due Date"
+        android:padding="8dp"
+        android:textColor="@android:color/darker_gray" />
 
     <!-- Nút lưu công việc -->
     <Button
         android:id="@+id/buttonSaveTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save Task"
-        android:layout_marginTop="24dp" />
+        android:layout_gravity="end"
+        android:layout_marginTop="24dp"
+        android:layout_marginRight="20dp"
+        android:backgroundTint="#FF9800"
+        android:text="Save Task" />
 
 </LinearLayout>

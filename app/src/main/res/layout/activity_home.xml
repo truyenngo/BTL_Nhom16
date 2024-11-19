@@ -1,34 +1,255 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-    <!-- Thanh tìm kiếm -->
-    <EditText
-        android:id="@+id/searchEditText"
+    android:layout_height="match_parent">
+
+    <!-- Thanh chứa logo và nút đăng xuất -->
+    <RelativeLayout
+        android:id="@+id/headerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search tasks"
-        android:padding="8dp"
-        android:background="@drawable/search_background" />
+        android:background="@color/cardview_light_background">
+
+        <!-- Logo bên trái -->
+        <ImageView
+            android:id="@+id/logoIcon"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_logo"
+            android:contentDescription="Logo" />
+
+        <!-- Nút đăng xuất bên phải -->
+        <ImageView
+            android:id="@+id/logoutIcon"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_logout"
+            android:contentDescription="Logout"
+            android:padding="8dp"
+            android:background="@drawable/button_border"/>
+    </RelativeLayout>
 
     <!-- Danh sách công việc -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewTasks"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/headerLayout"
+        android:layout_above="@id/subButtonsLayout"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"/>
+    <!-- Phần chứa các nút cài đặt thông báo -->
+    <LinearLayout
+        android:id="@+id/notificationSettingsLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/searchEditText"
-        android:layout_above="@id/fabAddTask"
-        android:layout_marginTop="16dp" />
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_below="@id/headerLayout"
+        android:visibility="gone"
+        android:padding="16dp">
 
+        <!-- Cài đặt thông báo trước hết hạn -->
+        <TextView
+            android:id="@+id/timeBeforeDeadlineLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cài đặt thời gian thông báo trước hết hạn"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/timeBeforeDeadlineEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nhập thời gian (phút)"
+            android:inputType="number"
+            android:text="10"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/saveTimeBeforeDeadlineButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#4CAF50"
+            android:text="Xác nhận"
+            android:textSize="20sp" />
+
+        <!-- Cài đặt thời gian thông báo hàng ngày -->
+        <TextView
+            android:id="@+id/dailyNotificationTimeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cài đặt thời gian thông báo hàng ngày"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/selectedTimeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="21:00"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/selectTimeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#FFC107"
+            android:text="Chọn thời gian"
+            android:textSize="20sp" />
+
+    </LinearLayout>
     <!-- Nút thêm công việc -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddTask"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/addTaskButton"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="16dp"
+        android:layout_marginBottom="100dp"
+        android:src="@drawable/ic_add"
         android:contentDescription="Add Task"
-        android:src="@drawable/ic_add" />
-</LinearLayout>
+        android:background="@drawable/button_border" />
+
+    <!-- Phần chứa các nút con -->
+    <LinearLayout
+        android:id="@+id/subButtonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dp"
+        android:paddingHorizontal="5dp">
+
+        <!-- Nút Sắp đến hạn -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/homesButton"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_upcoming_tasks"
+                android:contentDescription="Upcoming Tasks"
+                android:layout_gravity="center"
+                android:background="@drawable/button_selector"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/upcomingTasksLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sắp đến hạn"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+        <!-- Nút Mục yêu thích -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/favoritesButton"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_favorite_tasks"
+                android:contentDescription="Favorite Tasks"
+                android:layout_gravity="center"
+                android:background="@drawable/button_selector"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/favoritesLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Yêu thích"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+        <!-- Nút Đã hoàn thành -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/completedTasksButton"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_completed_tasks"
+                android:contentDescription="Completed Tasks"
+                android:layout_gravity="center"
+                android:background="@drawable/button_selector"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/completedTasksLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hoàn thành"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+        <!-- Nút Cài đặt thông báo -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/notificationSettingsButton"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_notification_setting"
+                android:contentDescription="Notification Settings"
+                android:layout_gravity="center"
+                android:background="@drawable/button_selector"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/notificationSettingsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thông báo"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textColor="@color/black" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

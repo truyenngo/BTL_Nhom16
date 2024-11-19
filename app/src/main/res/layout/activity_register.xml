@@ -27,6 +27,9 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginRight="20dp"
+        android:backgroundTint="#4CAF50"
         android:onClick="registerUser"
         android:text="Register" />
 

@@ -7,14 +7,16 @@ public class Task {
     private boolean isCompleted;
     private String creationDate;
     private String dueDate;
+    private boolean isFavorite;
 
-    public Task(int id, String name, String description, boolean isCompleted, String creationDate, String dueDate) {
+    public Task(int id, String name, String description, boolean isCompleted, String creationDate, String dueDate, boolean isFavorite) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.isCompleted = isCompleted;
         this.creationDate = creationDate;
         this.dueDate = dueDate;
+        this.isFavorite = isFavorite;
     }
 
     // Getters and Setters
@@ -45,4 +47,13 @@ public class Task {
     public void setCompleted(boolean completed) {
         isCompleted = completed;
     }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
 }
+
