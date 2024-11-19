@@ -6,13 +6,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +21,7 @@ public class HomeActivity extends AppCompatActivity {
     private TaskAdapter taskAdapter;
     private List<Task> taskList;
     private DatabaseHelper databaseHelper;
+    private ImageView favoritesButton;  // Nút yêu thích
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,28 +29,38 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         recyclerViewTasks = findViewById(R.id.recyclerViewTasks);
-        FloatingActionButton fabAddTask = findViewById(R.id.fabAddTask);
+        favoritesButton = findViewById(R.id.favoritesButton);  // Khởi tạo nút yêu thích
 
         // Cấu hình RecyclerView
         recyclerViewTasks.setLayoutManager(new LinearLayoutManager(this));
         taskList = new ArrayList<>();
-        taskAdapter = new TaskAdapter(taskList);
+
+        // Khởi tạo DatabaseHelper và TaskAdapter
+        databaseHelper = new DatabaseHelper(this);
+        taskAdapter = new TaskAdapter(taskList, databaseHelper);
         recyclerViewTasks.setAdapter(taskAdapter);
 
         // Lấy dữ liệu từ SQLite Database
-        databaseHelper = new DatabaseHelper(this);
         loadTasks();
 
         // Nút thêm công việc
-        fabAddTask.setOnClickListener(view -> {
+        findViewById(R.id.addTaskButton).setOnClickListener(view -> {
             Intent intent = new Intent(HomeActivity.this, AddTaskActivity.class);
             startActivity(intent);
         });
+
+        // Sự kiện cho nút yêu thích
+        favoritesButton.setOnClickListener(view -> {
+            loadFavoriteTasks();  // Tải lại các công việc yêu thích
+            boolean isSelected = favoritesButton.isSelected(); // Kiểm tra trạng thái hiện tại
+            favoritesButton.setSelected(!isSelected); // Đảo trạng thái (true -> false hoặc false -> true)
+        });
     }
 
+    // Lấy tất cả các công việc
     public void loadTasks() {
         List<Task> tasks = databaseHelper.getAllTasks();
-        Log.d("HomeActivity", "Tasks loaded: " + tasks.size());  // Log số lượng công việc lấy được
+        Log.d("HomeActivity", "Tasks loaded: " + tasks.size());
         if (tasks != null && !tasks.isEmpty()) {
             taskAdapter.updateList(tasks);
         } else {
@@ -58,7 +68,16 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-
+    // Lấy các công việc yêu thích
+    public void loadFavoriteTasks() {
+        List<Task> favoriteTasks = databaseHelper.getFavoriteTasks();  // Lấy các công việc yêu thích
+        Log.d("HomeActivity", "Favorite tasks loaded: " + favoriteTasks.size());
+        if (favoriteTasks != null && !favoriteTasks.isEmpty()) {
+            taskAdapter.updateList(favoriteTasks);  // Cập nhật danh sách trong adapter
+        } else {
+            Toast.makeText(this, "No favorite tasks found", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     @Override
     protected void onResume() {
@@ -66,4 +85,7 @@ public class HomeActivity extends AppCompatActivity {
         loadTasks(); // Tải lại công việc khi quay lại HomeActivity
     }
 }
+
+
+
 
