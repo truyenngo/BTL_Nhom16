@@ -1,6 +1,7 @@
 package com.example.btl_nhom16;
 
-import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -16,7 +17,7 @@ import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "TaskManagement.db";
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 5;
 
     // Bảng người dùng
     public static final String TABLE_USERS = "users";
@@ -33,6 +34,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_TASK_CREATION_DATE = "creation_date";
     private static final String COLUMN_TASK_DUE_DATE = "due_date";
     private static final String COLUMN_TASK_IS_FAVORITE = "isFavorite"; // Cột trạng thái yêu thích
+
+    // Bảng lưu task con
+    public static final String TABLE_SUBTASKS = "subtasks";
+    private static final String COLUMN_SUBTASK_ID = "subtask_id";
+    private static final String COLUMN_SUBTASK_TASK_ID_FK = "task_id";
+    private static final String COLUMN_SUBTASK_DESCRIPTION = "subtask_description";
+    private static final String COLUMN_SUBTASK_IS_COMPLETED = "subtask_is_completed";
+
     //Bảng lưu time
     private static final String TABLE_SETTINGS = "settings";
     private static final String COLUMN_TIME_BEFORE_DEADLINE = "time_before_deadline"; // Thời gian trước hạn
@@ -62,6 +71,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_TASK_IS_FAVORITE + " INTEGER DEFAULT 0)";  // Cột trạng thái yêu thích
         db.execSQL(CREATE_TASKS_TABLE);
 
+        // Tạo bảng công việc con
+        String CREATE_SUBTASKS_TABLE = "CREATE TABLE " + TABLE_SUBTASKS + " ("
+                + COLUMN_SUBTASK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + COLUMN_SUBTASK_TASK_ID_FK + " INTEGER, "
+                + COLUMN_SUBTASK_DESCRIPTION + " TEXT, "
+                + COLUMN_SUBTASK_IS_COMPLETED + " INTEGER DEFAULT 0)";
+        db.execSQL(CREATE_SUBTASKS_TABLE);
+
         // Tạo bảng cài đặt
         String CREATE_SETTINGS_TABLE = "CREATE TABLE " + TABLE_SETTINGS + " ("
                 + COLUMN_TIME_BEFORE_DEADLINE + " INTEGER DEFAULT 10, "
@@ -81,6 +98,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
 
+        if (oldVersion < 5) {
+            // Thêm bảng Subtasks
+            try {
+                // Tạo bảng công việc con
+                String CREATE_SUBTASKS_TABLE = "CREATE TABLE " + TABLE_SUBTASKS + " ("
+                        + COLUMN_SUBTASK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + COLUMN_SUBTASK_TASK_ID_FK + " INTEGER, "
+                        + COLUMN_SUBTASK_DESCRIPTION + " TEXT, "
+                        + COLUMN_SUBTASK_IS_COMPLETED + " INTEGER DEFAULT 0)";
+                db.execSQL(CREATE_SUBTASKS_TABLE);
+            } catch (Exception e) {
+                Log.e("DatabaseHelper", "Error upgrading database", e);
+            }
+        }
     }
 
     // Thêm công việc mới vào cơ sở dữ liệu
@@ -101,6 +132,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
 
         Log.d("DatabaseHelper", "Insert result: " + result);
+
+        return result != -1;
+    }
+
+    // sửa task
+    public boolean updateTask(int taskId, String name, String description, long startDate, long dueDate) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_TASK_NAME, name);
+        values.put(COLUMN_TASK_DESCRIPTION, description);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String startDateString = sdf.format(new Date(startDate));
+        String dueDateString = sdf.format(new Date(dueDate));
+
+        values.put(COLUMN_TASK_CREATION_DATE, startDateString);
+        values.put(COLUMN_TASK_DUE_DATE, dueDateString);
+
+        long result = db.update(TABLE_TASKS, values, COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(taskId)});
+        db.close();
+
+        Log.d("DatabaseHelper", "Update result: " + result);
 
         return result != -1;
     }
@@ -169,6 +222,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete(TABLE_TASKS, COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(task.getId())});
         db.close();
         Log.d("DatabaseHelper", "Deleted task with ID: " + task.getId());
+
+        deleteAllSubtasksOf(task);
     }
 
     // Lấy danh sách công việc từ cơ sở dữ liệu
@@ -217,6 +272,98 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return taskList;
+    }
+
+    // Thêm công việc con mới vào cơ sở dữ liệu
+    public boolean insertSubtask(int taskId, String subtaskDescription) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_SUBTASK_TASK_ID_FK, taskId);
+        values.put(COLUMN_SUBTASK_DESCRIPTION, subtaskDescription);
+
+        long result = db.insert(TABLE_SUBTASKS, null, values);
+        db.close();
+
+        Log.d("DatabaseHelper", "Insert result: " + result);
+
+        return result != -1;
+    }
+
+    // sửa task con
+    public boolean updateSubtask(int subtaskId, int taskId, String subtaskDescription) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_SUBTASK_TASK_ID_FK, taskId);
+        values.put(COLUMN_SUBTASK_DESCRIPTION, subtaskDescription);
+
+        long result = db.update(TABLE_SUBTASKS, values, COLUMN_SUBTASK_ID + " = ?", new String[]{String.valueOf(subtaskId)});
+        db.close();
+
+        Log.d("DatabaseHelper", "Update result: " + result);
+
+        return result != -1;
+    }
+
+    // Xóa công việc con khỏi cơ sở dữ liệu
+    public void deleteSubtask(Subtask subtask) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_SUBTASKS, COLUMN_SUBTASK_ID + " = ?", new String[]{String.valueOf(subtask.getId())});
+        db.close();
+        Log.d("DatabaseHelper", "Deleted subtask with ID: " + subtask.getId());
+    }
+
+    // Xoá tất cả công việc con của một công việc khởi cơ sở dữ liệu
+    public void deleteAllSubtasksOf(Task task) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_SUBTASKS, COLUMN_SUBTASK_TASK_ID_FK + " = ?", new String[]{String.valueOf(task.getId())});
+        db.close();
+        Log.d("DatabaseHelper", "Deleted all subtask of task with ID: " + task.getId());
+    }
+
+    // Lấy danh sách công việc con của một công việc từ cơ sở dữ liệu
+    public List<Subtask> getAllSubtasksOf(Task task) {
+        List<Subtask> subtaskList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Truy vấn dữ liệu
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_SUBTASKS + " WHERE " + COLUMN_SUBTASK_TASK_ID_FK + " = ?", new String[]{String.valueOf(task.getId())});
+        Log.d("DatabaseHelper", "Query result count: " + cursor.getCount());
+
+        // Kiểm tra xem các cột có tồn tại không
+        int columnSubtaskId = cursor.getColumnIndex(COLUMN_SUBTASK_ID);
+        int columnTaskId = cursor.getColumnIndex(COLUMN_SUBTASK_TASK_ID_FK);
+        int columnSubtaskDescription = cursor.getColumnIndex(COLUMN_SUBTASK_DESCRIPTION);
+        int columnSubtaskIsCompleted = cursor.getColumnIndex(COLUMN_SUBTASK_IS_COMPLETED);
+
+
+        if (columnSubtaskId == -1 ||
+                columnTaskId == -1 ||
+                columnSubtaskDescription == -1 ||
+                columnSubtaskIsCompleted == -1) {
+            // Nếu có cột nào không tìm thấy, trả về danh sách rỗng hoặc log lỗi
+            cursor.close();
+            db.close();
+            return subtaskList;
+        }
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                int subtaskId = cursor.getInt(columnSubtaskId);
+                int taskId = cursor.getInt(columnTaskId);
+                String description = cursor.getString(columnSubtaskDescription);
+                boolean isCompleted = cursor.getInt(columnSubtaskIsCompleted) == 1;
+
+                // Tạo đối tượng Task và thêm vào danh sách
+                Subtask subtask = new Subtask(subtaskId, taskId, description, isCompleted);
+                subtaskList.add(subtask);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return subtaskList;
     }
 
     // Kiểm tra đăng nhập
@@ -312,7 +459,97 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
+    // Thêm công việc vào mục hoàn thành
+    public void addTaskToCompleted(Task task) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_TASK_IS_COMPLETED, 1);  // Đánh dấu là hoàn thành
+        db.update(TABLE_TASKS, values, COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(task.getId())});
+        db.close();
 
+        addAllSubtasksOfToCompleted(task);
+    }
 
+    // Gỡ công việc khỏi mục hoàn thành
+    public void removeTaskFromCompleted(Task task) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_TASK_IS_COMPLETED, 0);  // Đánh dấu là chưa hoàn thành
+        db.update(TABLE_TASKS, values, COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(task.getId())});
+        db.close();
+    }
+
+    // Lấy danh sách các công việc hoàn thành
+    public List<Task> getCompletedTasks() {
+        List<Task> taskList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Truy vấn dữ liệu chỉ lấy các công việc hoàn thành
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TASKS + " WHERE " + COLUMN_TASK_IS_COMPLETED + " = 1", null);
+        Log.d("DatabaseHelper", "Query result count: " + cursor.getCount());
+
+        // Kiểm tra xem các cột có tồn tại không
+        int columnTaskId = cursor.getColumnIndex(COLUMN_TASK_ID);
+        int columnTaskName = cursor.getColumnIndex(COLUMN_TASK_NAME);
+        int columnTaskDescription = cursor.getColumnIndex(COLUMN_TASK_DESCRIPTION);
+        int columnTaskCreationDate = cursor.getColumnIndex(COLUMN_TASK_CREATION_DATE);
+        int columnTaskDueDate = cursor.getColumnIndex(COLUMN_TASK_DUE_DATE);
+        int columnTaskIsCompleted = cursor.getColumnIndex(COLUMN_TASK_IS_COMPLETED);
+        int columnTaskIsFavorite = cursor.getColumnIndex(COLUMN_TASK_IS_FAVORITE);
+
+        if (columnTaskId == -1 || columnTaskName == -1 || columnTaskDescription == -1 ||
+                columnTaskCreationDate == -1 || columnTaskDueDate == -1 || columnTaskIsCompleted == -1 || columnTaskIsFavorite == -1) {
+            cursor.close();
+            db.close();
+            return taskList;
+        }
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(columnTaskId);
+                String name = cursor.getString(columnTaskName);
+                String description = cursor.getString(columnTaskDescription);
+                String creationDate = cursor.getString(columnTaskCreationDate);
+                String dueDate = cursor.getString(columnTaskDueDate);
+                boolean isCompleted = cursor.getInt(columnTaskIsCompleted) == 1;
+                boolean isFavorite = cursor.getInt(columnTaskIsFavorite) == 1;
+
+                // Tạo đối tượng Task và thêm vào danh sách
+                Task task = new Task(id, name, description, isCompleted, creationDate, dueDate, isFavorite);
+                taskList.add(task);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return taskList;
+    }
+
+    // Thêm công việc con vào mục hoàn thành
+    public void addSubtaskToCompleted(Subtask subtask) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_SUBTASK_IS_COMPLETED, 1);  // Đánh dấu là hoàn thành
+        db.update(TABLE_SUBTASKS, values, COLUMN_SUBTASK_ID + " = ?", new String[]{String.valueOf(subtask.getId())});
+        db.close();
+    }
+
+    // Thêm tất cả công việc con của một công việc vào mục hoàn thành
+    public void addAllSubtasksOfToCompleted(Task task) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_SUBTASK_IS_COMPLETED, 1);  // Đánh dấu là hoàn thành
+        db.update(TABLE_SUBTASKS, values, COLUMN_SUBTASK_TASK_ID_FK + " = ?", new String[]{String.valueOf(task.getId())});
+        db.close();
+    }
+
+    // Gỡ công việc con khỏi mục hoàn thành
+    public void removeSubtaskFromCompleted(Subtask subtask) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_SUBTASK_IS_COMPLETED, 0);  // Đánh dấu là chưa hoàn thành
+        db.update(TABLE_SUBTASKS, values, COLUMN_SUBTASK_ID + " = ?", new String[]{String.valueOf(subtask.getId())});
+        db.close();
+    }
 }
 

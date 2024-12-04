@@ -5,33 +5,31 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
 public class AddTaskActivity extends AppCompatActivity {
-    private EditText editTextTaskName, editTextTaskDescription;
-    private TextView textViewStartDate, textViewDueDate;
-    private Button buttonSaveTask;
-    private DatabaseHelper databaseHelper;
+    protected EditText editTextTaskName, editTextTaskDescription;
+    protected TextView textViewStartDate, textViewDueDate;
+    protected Button buttonSaveTask;
+    protected DatabaseHelper databaseHelper;
 
-    private Calendar startCalendar = Calendar.getInstance();
-    private Calendar dueCalendar = Calendar.getInstance();
+    protected Calendar startCalendar = Calendar.getInstance();
+    protected Calendar dueCalendar = Calendar.getInstance();
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_task);
-
+    protected void InitAllCommonViewElements() {
         // Khởi tạo các view
         editTextTaskName = findViewById(R.id.editTextTaskName);
         editTextTaskDescription = findViewById(R.id.editTextTaskDescription);
@@ -45,13 +43,22 @@ public class AddTaskActivity extends AppCompatActivity {
 
         // Thiết lập sự kiện cho chọn ngày hạn hoàn thành
         textViewDueDate.setOnClickListener(v -> showDatePickerDialog(dueCalendar, textViewDueDate));
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_task);
+
+        // Khởi tạo tất cả các thành phần giao diện (chuyển vào hàm để kế thừa cho dễ)
+        InitAllCommonViewElements();
 
         // Thiết lập sự kiện cho nút lưu công việc
         buttonSaveTask.setOnClickListener(v -> saveTask());
     }
 
     // Hiển thị DatePicker
-    private void showDatePickerDialog(Calendar calendar, TextView textView) {
+    protected void showDatePickerDialog(Calendar calendar, TextView textView) {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -68,27 +75,31 @@ public class AddTaskActivity extends AppCompatActivity {
     }
 
     // Hiển thị TimePicker
-    private void showTimePickerDialog(Calendar calendar, TextView textView) {
+    protected void showTimePickerDialog(Calendar calendar, TextView textView) {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
 
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, selectedHour, selectedMinute) -> {
             calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
             calendar.set(Calendar.MINUTE, selectedMinute);
-            textView.setText(getFormattedDate(calendar) + " " + String.format("%02d:%02d", selectedHour, selectedMinute));  // Cập nhật thời gian vào TextView
+            textView.setText(getFormattedDate_InMillis(calendar));  // Cập nhật thời gian vào TextView
         }, hour, minute, true);
 
         timePickerDialog.show();
     }
 
     // Định dạng ngày tháng
-    private String getFormattedDate(Calendar calendar) {
+    protected String getFormattedDate(Calendar calendar) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         return sdf.format(calendar.getTime());
     }
 
+    protected String getFormattedDate_InMillis(Calendar calendar) {
+        return getFormattedDate(calendar) + " " + String.format("%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+    }
+
     // Lưu công việc vào cơ sở dữ liệu
-    private void saveTask() {
+    protected void saveTask() {
         String taskName = editTextTaskName.getText().toString().trim();
         String taskDescription = editTextTaskDescription.getText().toString().trim();
 

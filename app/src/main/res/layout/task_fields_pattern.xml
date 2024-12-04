@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="#FF9800"
+    android:orientation="vertical">
+
+    <!-- Tên công việc -->
+    <EditText
+        android:id="@+id/editTextTaskName"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Task Name"
+        android:inputType="text" />
+
+    <!-- Mô tả công việc -->
+    <EditText
+        android:id="@+id/editTextTaskDescription"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:hint="Task Description"
+        android:inputType="textMultiLine" />
+
+    <!-- Ngày bắt đầu -->
+    <TextView
+        android:id="@+id/textViewStartDate"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/search_background"
+        android:clickable="true"
+        android:focusable="false"
+        android:hint="Start Date"
+        android:padding="8dp"
+        android:textColor="@android:color/darker_gray" />
+
+    <!-- Ngày hạn hoàn thành -->
+    <TextView
+        android:id="@+id/textViewDueDate"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/search_background"
+        android:clickable="true"
+        android:focusable="false"
+        android:hint="Due Date"
+        android:padding="8dp"
+        android:textColor="@android:color/darker_gray" />
+</LinearLayout>
