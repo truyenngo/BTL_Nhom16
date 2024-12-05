@@ -73,7 +73,7 @@ public class HomeActivity extends AppCompatActivity {
         recyclerViewTasks.setLayoutManager(new LinearLayoutManager(this));
         taskList = new ArrayList<>();
         databaseHelper = new DatabaseHelper(this);
-        taskAdapter = new TaskAdapter(taskList, databaseHelper);
+        taskAdapter = new TaskAdapter(HomeActivity.this, taskList, databaseHelper);
         recyclerViewTasks.setAdapter(taskAdapter);
 
         addTask();
@@ -156,13 +156,13 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    // Lấy các công việc đã hoàn thành và quá hạn
+    // Lấy các công việc đã hoàn thành
     public void loadCompletedTasks() {
-        List<Task> expiredTasks = databaseHelper.getExpiredTasks();
-        if (expiredTasks != null && !expiredTasks.isEmpty()) {
-            taskAdapter.updateList(expiredTasks);
+        List<Task> doneTasks = databaseHelper.getCompletedTasks();
+        if (doneTasks != null && !doneTasks.isEmpty()) {
+            taskAdapter.updateList(doneTasks);
         } else {
-            Toast.makeText(this, "No expired tasks found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No done tasks found", Toast.LENGTH_SHORT).show();
         }
     }
 

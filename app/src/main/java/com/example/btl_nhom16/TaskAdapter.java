@@ -1,7 +1,8 @@
 package com.example.btl_nhom16;
 
 import android.app.AlertDialog;
-import android.util.Log;
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +16,13 @@ import java.util.List;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
     private List<Task> taskList;
-    private DatabaseHelper databaseHelper;  // Cần DatabaseHelper để cập nhật dữ liệu
+    private DatabaseHelper databaseHelper;// Cần DatabaseHelper để cập nhật dữ liệu
+    private Context parentContext;
 
-    public TaskAdapter(List<Task> taskList, DatabaseHelper databaseHelper) {
+    public TaskAdapter(Context parentContext, List<Task> taskList, DatabaseHelper databaseHelper) {
         this.taskList = taskList;
         this.databaseHelper = databaseHelper;
+        this.parentContext = parentContext;
     }
 
     @Override
@@ -36,10 +39,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         holder.taskName.setText(task.getName());
         holder.taskDescription.setText(task.getDescription());
         String statusText = task.isCompleted() ? "Completed" : "Pending";
-        holder.taskStatus.setText("Status: " + statusText);
-        holder.taskStatus.setTextColor(task.isCompleted() ?
-                holder.itemView.getContext().getResources().getColor(android.R.color.holo_green_dark) :
-                holder.itemView.getContext().getResources().getColor(android.R.color.holo_red_dark));
         holder.taskDueDate.setText("Due Date: " + task.getDueDate());
 
         if (task.isFavorite()) {
@@ -61,6 +60,25 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                 databaseHelper.removeFromFavorites(task);
             }
         });
+
+        if (task.isCompleted()) {
+            holder.doneIcon.setImageResource(R.drawable.ic_done_filled);
+        } else {
+            holder.doneIcon.setImageResource(R.drawable.ic_done_empty);
+        }
+        holder.doneIcon.setOnClickListener(view -> {
+            boolean newDoneStatus = !task.isCompleted();
+            task.setCompleted(newDoneStatus);
+
+            if (newDoneStatus) {
+                holder.doneIcon.setImageResource(R.drawable.ic_done_filled);
+                databaseHelper.addTaskToCompleted(task);
+            } else {
+                holder.doneIcon.setImageResource(R.drawable.ic_done_empty);
+                databaseHelper.removeTaskFromCompleted(task);
+            }
+        });
+
         // event longclick
         holder.itemView.setOnLongClickListener(v -> {
             // Hiển thị hộp thoại xác nhận
@@ -86,7 +104,20 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             return true;
         });
 
-
+        // event click
+        holder.itemView.setOnClickListener(v -> {
+            try {
+                Intent intent = new Intent(parentContext, DetailTaskActivity.class);
+                intent.putExtra("selectedTaskId", task.getId());
+                parentContext.startActivity(intent);
+            } catch (Exception e) {
+                new AlertDialog.Builder(parentContext)
+                        .setTitle("Lmao")
+                        .setMessage(e.getMessage())
+                        .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                        .show();
+            }
+        });
     }
 
 
@@ -104,17 +135,17 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     public static class TaskViewHolder extends RecyclerView.ViewHolder {
         TextView taskName;
         TextView taskDescription;
-        TextView taskStatus;
         TextView taskDueDate;
         ImageView favoriteIcon;  // Icon sao
+        ImageView doneIcon; // Icon done
 
         public TaskViewHolder(View itemView) {
             super(itemView);
             taskName = itemView.findViewById(R.id.taskName);
             taskDescription = itemView.findViewById(R.id.taskDescription);
-            taskStatus = itemView.findViewById(R.id.taskStatus);
             taskDueDate = itemView.findViewById(R.id.taskDueDate);
             favoriteIcon = itemView.findViewById(R.id.favoriteIcon);
+            doneIcon = itemView.findViewById(R.id.doneIcon);
         }
     }
 }

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="#FF9800"
+    android:orientation="vertical">
+    <!-- Thanh chứa các nút -->
+    <LinearLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:background="@color/cardview_light_background"
+        android:gravity="right">
+
+        <!-- Icon save (save) -->
+        <ImageView
+            android:id="@+id/saveIcon"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:contentDescription="Done"
+            android:src="@drawable/ic_save_enable"
+            android:padding="5dp"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
+
+        <!-- Icon thùng rác (trash) -->
+        <ImageView
+            android:id="@+id/trashIcon"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:contentDescription="Done"
+            android:src="@drawable/ic_trash"
+            android:padding="5dp"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
+
+        <!-- Icon yêu thích (star) -->
+        <ImageView
+            android:id="@+id/favoriteIcon"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:contentDescription="Favorite"
+            android:src="@drawable/ic_star_empty"
+            android:padding="5dp"
+            android:background="@drawable/button_border"/>
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
+
+        <!-- Icon đánh dấu hoàn thành (done) -->
+        <ImageView
+            android:id="@+id/doneIcon"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:contentDescription="Done"
+            android:src="@drawable/ic_done_empty"
+            android:padding="5dp"
+            android:background="@drawable/button_border"/>
+    </LinearLayout>
+
+    <include
+        android:id="@+id/taskFieldsPattern"
+        layout="@layout/task_fields_pattern"
+        android:layout_below="@id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:id="@+id/subtaskLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/taskFieldsPattern"
+        android:layout_above="@id/lineAboveBtnAddSubtask"
+        android:orientation="vertical"
+        android:background="@color/cardview_light_background">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize="20sp"
+            android:text="Danh sách công việc phụ"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginVertical="1dp"
+            android:background="@color/black"/>
+        <!-- Danh sách công việc -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewSubtasks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/lineAboveBtnAddSubtask"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginVertical="1dp"
+        android:layout_above="@id/btnAddSubtask"
+        android:background="@color/black"/>
+    <Button
+        android:id="@+id/btnAddSubtask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Thêm công việc phụ"/>
+</RelativeLayout>
