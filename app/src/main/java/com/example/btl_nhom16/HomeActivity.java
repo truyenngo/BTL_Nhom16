@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -51,10 +52,11 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         getwide();
+
         // Xử lý các nút điều hướng
         homeButton.setOnClickListener(view -> {
             switchToTasksView();
-            loadTasks(); 
+            loadUpcomingTasks();
         });
 
         favoritesButton.setOnClickListener(view -> {
@@ -73,6 +75,7 @@ public class HomeActivity extends AppCompatActivity {
         databaseHelper = new DatabaseHelper(this);
         taskAdapter = new TaskAdapter(taskList, databaseHelper);
         recyclerViewTasks.setAdapter(taskAdapter);
+
         addTask();
         // Lấy dữ liệu từ Database
         loadTasks();
@@ -80,6 +83,7 @@ public class HomeActivity extends AppCompatActivity {
         logout();
 
     }
+
     public void getwide(){
         // Khởi tạo các view
         recyclerViewTasks = findViewById(R.id.recyclerViewTasks);
@@ -94,27 +98,37 @@ public class HomeActivity extends AppCompatActivity {
         completedTasksButton = findViewById(R.id.completedTasksButton);  // Nút Hoàn thành
         notificationSettingsButton = findViewById(R.id.notificationSettingsButton);  // Nút Cài đặt thông báo
     }
+
     // Đăng xuất
     public void logout() {
         logoutButton = findViewById(R.id.logoutIcon);
         logoutButton.setOnClickListener(view -> {
-            PopupMenu popupMenu = new PopupMenu(HomeActivity.this, view);
-            popupMenu.getMenuInflater().inflate(R.menu.popup_menu_logout, popupMenu.getMenu());
+            // Tạo AlertDialog xác nhận đăng xuất
+            new android.app.AlertDialog.Builder(HomeActivity.this)
+                    .setTitle("Xác nhận đăng xuất")
+                    .setMessage("Bạn có chắc chắn muốn đăng xuất không?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        // Xóa thông tin đăng nhập từ SharedPreferences (nếu có)
+                        SharedPreferences sharedPreferences = getSharedPreferences("user_preferences", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.clear(); // Xóa tất cả dữ liệu
+                        editor.apply();
 
-            popupMenu.setOnMenuItemClickListener(menuItem -> {
-                if (menuItem.getItemId() == R.id.action_logout) {
-                    Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
-                    return true;
-                }
-                return false;
-            });
-
-            popupMenu.show();
+                        // Chuyển hướng người dùng về màn hình đăng nhập
+                        Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .setNegativeButton("No", (dialog, which) -> {
+                        // Nếu chọn No thì không làm gì
+                        dialog.dismiss();
+                    })
+                    .show();
         });
     }
+
+
     // Nút thêm công việc
     public  void addTask(){
         findViewById(R.id.addTaskButton).setOnClickListener(view -> {
@@ -122,13 +136,23 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
-    // Lấy tất cả các công việc
+
+    // Lấy các công việc chưa đến hạn
     public void loadTasks() {
         List<Task> tasks = databaseHelper.getAllTasks();
         if (tasks != null && !tasks.isEmpty()) {
             taskAdapter.updateList(tasks);
         } else {
-            Toast.makeText(this, "No tasks found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No upcoming tasks found", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void loadUpcomingTasks() {
+        List<Task> tasks = databaseHelper.getUpcomingTasks();
+        if (tasks != null && !tasks.isEmpty()) {
+            taskAdapter.updateList(tasks);
+        } else {
+            Toast.makeText(this, "No upcoming tasks found", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -169,9 +193,6 @@ public class HomeActivity extends AppCompatActivity {
         recyclerViewTasks.setVisibility(View.VISIBLE); // Hiển thị lại danh sách task
         notificationSettingsLayout.setVisibility(View.GONE); // Ẩn layout cài đặt thông báo
     }
-
-
-
 
 }
 
