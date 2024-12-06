@@ -1,7 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingTop="15dp">
 
     <!-- Thanh chứa logo, tiêu đề, và nút đăng xuất -->
     <RelativeLayout
@@ -9,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/cardview_light_background"
-        android:padding="8dp">
+        android:padding="8dp"
+        >
 
         <!-- Logo bên trái -->
         <ImageView
@@ -56,37 +58,45 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"/>
 
-    <TextView
-        android:id="@+id/noTasksText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="No tasks available"
-        android:layout_centerInParent="true"
-        android:visibility="gone"/> <!-- Ẩn ban đầu -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/headerLayout"
+        android:layout_above="@id/subButtonsLayout">
 
-    <TextView
-        android:id="@+id/noCompletedTasksText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="No completed tasks available"
-        android:layout_centerInParent="true"
-        android:visibility="gone"/> <!-- Ẩn ban đầu -->
+        <TextView
+            android:id="@+id/noTasksText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="No tasks available"
+            android:visibility="gone"/>
 
-    <TextView
-        android:id="@+id/noFavoriteTasksText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="No favorite tasks available"
-        android:layout_centerInParent="true"
-        android:visibility="gone"/> <!-- Ẩn ban đầu -->
+        <TextView
+            android:id="@+id/noCompletedTasksText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="No completed tasks available"
+            android:visibility="gone"/>
 
-    <TextView
-        android:id="@+id/noUpcomingTasksText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="No upcoming tasks"
-        android:layout_centerInParent="true"
-        android:visibility="gone"/> <!-- Ẩn ban đầu -->
+        <TextView
+            android:id="@+id/noFavoriteTasksText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="No favorite tasks available"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/noUpcomingTasksText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="No upcoming tasks"
+            android:visibility="gone"/>
+    </FrameLayout>
+
 
     <LinearLayout
         android:id="@+id/notificationSettingsLayout"
@@ -120,7 +130,7 @@
             android:id="@+id/saveTimeBeforeDeadlineButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#4CAF50"
+            android:backgroundTint="#D58099"
             android:text="Xác nhận"
             android:textSize="20sp" />
 
@@ -144,7 +154,7 @@
             android:id="@+id/selectTimeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#FFC107"
+            android:backgroundTint="#D58099"
             android:text="Chọn thời gian"
             android:textSize="20sp" />
 

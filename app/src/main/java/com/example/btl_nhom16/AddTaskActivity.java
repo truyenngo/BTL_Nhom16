@@ -63,7 +63,8 @@ public class AddTaskActivity extends AppCompatActivity {
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, selectedYear, selectedMonth, selectedDay) -> {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                (view, selectedYear, selectedMonth, selectedDay) -> {
             calendar.set(Calendar.YEAR, selectedYear);
             calendar.set(Calendar.MONTH, selectedMonth);
             calendar.set(Calendar.DAY_OF_MONTH, selectedDay);
@@ -79,10 +80,11 @@ public class AddTaskActivity extends AppCompatActivity {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, selectedHour, selectedMinute) -> {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                (view, selectedHour, selectedMinute) -> {
             calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
             calendar.set(Calendar.MINUTE, selectedMinute);
-            textView.setText(getFormattedDate_InMillis(calendar));  // Cập nhật thời gian vào TextView
+            textView.setText(getFormattedDate_InMillis(calendar));
         }, hour, minute, true);
 
         timePickerDialog.show();
@@ -95,27 +97,27 @@ public class AddTaskActivity extends AppCompatActivity {
     }
 
     protected String getFormattedDate_InMillis(Calendar calendar) {
-        return getFormattedDate(calendar) + " " + String.format("%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+        return getFormattedDate(calendar) + " " + String.format("%02d:%02d",
+                calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
     }
 
     // Lưu công việc vào cơ sở dữ liệu
     protected void saveTask() {
         String taskName = editTextTaskName.getText().toString().trim();
         String taskDescription = editTextTaskDescription.getText().toString().trim();
-
         if (taskName.isEmpty()) {
             editTextTaskName.setError("Task name is required");
             return;
         }
-
         // Kiểm tra xem ngày bắt đầu có sau ngày đến hạn không
         if (startCalendar.after(dueCalendar)) {
-            Toast.makeText(this, "Start date must be before due date", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Start date must be before due date",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
-
         // Lưu công việc vào database
-        boolean isInserted = databaseHelper.insertTask(taskName, taskDescription, startCalendar.getTimeInMillis(), dueCalendar.getTimeInMillis());
+        boolean isInserted = databaseHelper.insertTask(taskName, taskDescription,
+                startCalendar.getTimeInMillis(), dueCalendar.getTimeInMillis());
         if (isInserted) {
             // Truy vấn để xác nhận công việc có trong cơ sở dữ liệu
             List<Task> tasks = databaseHelper.getAllTasks();

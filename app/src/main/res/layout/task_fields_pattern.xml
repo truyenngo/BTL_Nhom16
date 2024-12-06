@@ -11,7 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="Task Name"
-        android:inputType="text" />
+        android:inputType="text"
+        android:background="@drawable/button_border"
+        android:paddingLeft="15dp"/>
 
     <!-- Mô tả công việc -->
     <EditText
@@ -20,7 +22,9 @@
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:hint="Task Description"
-        android:inputType="textMultiLine" />
+        android:inputType="textMultiLine"
+        android:background="@drawable/button_border"
+        android:paddingLeft="15dp"/>
 
     <!-- Ngày bắt đầu -->
     <TextView
@@ -28,11 +32,11 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/search_background"
+        android:background="@drawable/button_border"
         android:clickable="true"
         android:focusable="false"
         android:hint="Start Date"
-        android:padding="8dp"
+        android:padding="15dp"
         android:textColor="@android:color/darker_gray" />
 
     <!-- Ngày hạn hoàn thành -->
@@ -41,10 +45,10 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/search_background"
+        android:background="@drawable/button_border"
         android:clickable="true"
         android:focusable="false"
         android:hint="Due Date"
-        android:padding="8dp"
+        android:padding="15dp"
         android:textColor="@android:color/darker_gray" />
 </LinearLayout>

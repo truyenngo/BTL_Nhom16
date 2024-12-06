@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:backgroundTint="#FF9800"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="20dp">
 
     <include layout="@layout/task_fields_pattern"
         android:layout_width="match_parent"
@@ -17,7 +18,8 @@
         android:layout_gravity="end"
         android:layout_marginTop="24dp"
         android:layout_marginRight="20dp"
-        android:backgroundTint="#FF9800"
-        android:text="Save Task" />
+        android:text="Save Task"
+        android:backgroundTint="#D7566A"
+        android:textSize="18sp"/>
 
 </LinearLayout>
