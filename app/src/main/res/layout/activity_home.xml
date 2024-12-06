@@ -3,12 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Thanh chứa logo và nút đăng xuất -->
+    <!-- Thanh chứa logo, tiêu đề, và nút đăng xuất -->
     <RelativeLayout
         android:id="@+id/headerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/cardview_light_background">
+        android:background="@color/cardview_light_background"
+        android:padding="8dp">
 
         <!-- Logo bên trái -->
         <ImageView
@@ -30,8 +31,21 @@
             android:src="@drawable/ic_logout"
             android:contentDescription="Logout"
             android:padding="8dp"
-            android:background="@drawable/button_border"/>
+            android:background="@drawable/button_border" />
+
+        <!-- Tiêu đề ở giữa -->
+        <TextView
+            android:id="@+id/headerTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Tất cả công việc"
+            android:textSize="18sp"
+            android:textColor="#D7566A"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center" />
     </RelativeLayout>
+
 
     <!-- Danh sách công việc -->
     <androidx.recyclerview.widget.RecyclerView

@@ -2,35 +2,78 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_register"
+        android:layout_gravity="center"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp"/>
 
     <EditText
         android:id="@+id/editTextUsername"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Username" />
+        android:layout_height="50dp"
+        android:hint="Username"
+        android:background="@drawable/button_border"
+        android:paddingLeft="15dp"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp"/>
 
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="Password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:background="@drawable/button_border"
+        android:paddingLeft="15dp"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp"/>
 
     <EditText
         android:id="@+id/editTextConfirmPassword"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="Confirm Password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:background="@drawable/button_border"
+        android:paddingLeft="15dp"
+        />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp"/>
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginRight="20dp"
-        android:backgroundTint="#4CAF50"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:backgroundTint="#D7566A"
+        android:textSize="18sp"
         android:onClick="registerUser"
         android:text="Register" />
+
+    <TextView
+        android:id="@+id/textViewExit"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:text="Back to Sign In"
+        android:textColor="#D7566A"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif"
+        android:layout_marginTop="20dp"
+        android:onClick="exitToLogin" />
 
 </LinearLayout>

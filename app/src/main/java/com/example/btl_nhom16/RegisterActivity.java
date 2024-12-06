@@ -1,8 +1,10 @@
 package com.example.btl_nhom16;
 
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,11 +12,15 @@ import androidx.appcompat.app.AppCompatActivity;
 public class RegisterActivity extends AppCompatActivity {
     private EditText editTextUsername, editTextPassword, editTextConfirmPassword;
     private DatabaseHelper databaseHelper;
+    TextView textViewExit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        textViewExit = findViewById(R.id.textViewExit);
+        textViewExit.setPaintFlags(textViewExit.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
         editTextUsername = findViewById(R.id.editTextUsername);
         editTextPassword = findViewById(R.id.editTextPassword);
@@ -51,6 +57,12 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public void exitToLogin(View view) {
+        // Quay lại màn hình đăng nhập
+        finish();
+    }
+
 
 }
 
