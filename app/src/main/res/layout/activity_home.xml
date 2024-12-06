@@ -46,7 +46,6 @@
             android:gravity="center" />
     </RelativeLayout>
 
-
     <!-- Danh sách công việc -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewTasks"
@@ -56,7 +55,31 @@
         android:layout_above="@id/subButtonsLayout"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"/>
-    <!-- Phần chứa các nút cài đặt thông báo -->
+
+    <TextView
+        android:id="@+id/noCompletedTasksText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No completed tasks available"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/> <!-- Ẩn ban đầu -->
+
+    <TextView
+        android:id="@+id/noFavoriteTasksText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No favorite tasks available"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/> <!-- Ẩn ban đầu -->
+
+    <TextView
+        android:id="@+id/noUpcomingTasksText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No upcoming tasks"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/> <!-- Ẩn ban đầu -->
+
     <LinearLayout
         android:id="@+id/notificationSettingsLayout"
         android:layout_width="match_parent"
@@ -93,7 +116,6 @@
             android:text="Xác nhận"
             android:textSize="20sp" />
 
-        <!-- Cài đặt thời gian thông báo hàng ngày -->
         <TextView
             android:id="@+id/dailyNotificationTimeLabel"
             android:layout_width="wrap_content"
@@ -119,6 +141,8 @@
             android:textSize="20sp" />
 
     </LinearLayout>
+
+
     <!-- Nút thêm công việc -->
     <ImageView
         android:id="@+id/addTaskButton"

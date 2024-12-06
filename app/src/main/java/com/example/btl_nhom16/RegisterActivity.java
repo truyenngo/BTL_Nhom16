@@ -33,13 +33,11 @@ public class RegisterActivity extends AppCompatActivity {
         String password = editTextPassword.getText().toString().trim();
         String confirmPassword = editTextConfirmPassword.getText().toString().trim();
 
-        // Kiểm tra xem các trường có bị trống không
         if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Kiểm tra mật khẩu xác nhận
         if (password.equals(confirmPassword)) {
             // Kiểm tra nếu người dùng đã tồn tại
             if (databaseHelper.checkUser(username, password)) {
@@ -59,11 +57,8 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void exitToLogin(View view) {
-        // Quay lại màn hình đăng nhập
         finish();
     }
-
-
 }
 
 

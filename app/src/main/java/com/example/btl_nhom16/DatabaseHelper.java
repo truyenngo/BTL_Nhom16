@@ -158,23 +158,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    // Lấy các công việc đã hoàn thành theo ngày
-    public List<Task> getExpiredTasks() {
+    // Xóa công việc khỏi cơ sở dữ liệu
+    public void deleteTask(Task task) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_TASKS, COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(task.getId())});
+        db.close();
+        Log.d("DatabaseHelper", "Deleted task with ID: " + task.getId());
+
+        deleteAllSubtasksOf(task);
+    }
+
+    // Lấy danh sách các công việc yêu thích
+    public List<Task> getFavoriteTasks() {
         List<Task> taskList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        // Truy vấn lấy tất cả công việc (bao gồm cột isFavorite)
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TASKS, null);
+        // Truy vấn dữ liệu chỉ lấy các công việc yêu thích
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TASKS + " WHERE " + COLUMN_TASK_IS_FAVORITE + " = 1", null);
         Log.d("DatabaseHelper", "Query result count: " + cursor.getCount());
 
-        // Kiểm tra các cột trong cơ sở dữ liệu
+        // Kiểm tra xem các cột có tồn tại không
         int columnTaskId = cursor.getColumnIndex(COLUMN_TASK_ID);
         int columnTaskName = cursor.getColumnIndex(COLUMN_TASK_NAME);
         int columnTaskDescription = cursor.getColumnIndex(COLUMN_TASK_DESCRIPTION);
         int columnTaskCreationDate = cursor.getColumnIndex(COLUMN_TASK_CREATION_DATE);
         int columnTaskDueDate = cursor.getColumnIndex(COLUMN_TASK_DUE_DATE);
         int columnTaskIsCompleted = cursor.getColumnIndex(COLUMN_TASK_IS_COMPLETED);
-        int columnTaskIsFavorite = cursor.getColumnIndex(COLUMN_TASK_IS_FAVORITE);  // Lấy cột isFavorite
+        int columnTaskIsFavorite = cursor.getColumnIndex(COLUMN_TASK_IS_FAVORITE);
 
         if (columnTaskId == -1 || columnTaskName == -1 || columnTaskDescription == -1 ||
                 columnTaskCreationDate == -1 || columnTaskDueDate == -1 || columnTaskIsCompleted == -1 || columnTaskIsFavorite == -1) {
@@ -182,8 +192,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.close();
             return taskList;
         }
-
-        long currentTime = System.currentTimeMillis();  // Thời gian thực
 
         if (cursor.moveToFirst()) {
             do {
@@ -193,40 +201,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String creationDate = cursor.getString(columnTaskCreationDate);
                 String dueDate = cursor.getString(columnTaskDueDate);
                 boolean isCompleted = cursor.getInt(columnTaskIsCompleted) == 1;
-                boolean isFavorite = cursor.getInt(columnTaskIsFavorite) == 1;  // Lấy giá trị isFavorite
+                boolean isFavorite = cursor.getInt(columnTaskIsFavorite) == 1;
 
-                // Chuyển đổi ngày hết hạn thành long để so sánh
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                Date dueDateObject = null;
-                try {
-                    dueDateObject = sdf.parse(dueDate);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                if (dueDateObject != null && dueDateObject.getTime() < currentTime) {
-                    // Nếu công việc đã quá hạn, thêm vào danh sách
-                    Task task = new Task(id, name, description, isCompleted, creationDate, dueDate, isFavorite);  // Truyền isFavorite vào Task
-                    taskList.add(task);
-                }
-
+                // Tạo đối tượng Task và thêm vào danh sách
+                Task task = new Task(id, name, description, isCompleted, creationDate, dueDate, isFavorite);
+                taskList.add(task);
             } while (cursor.moveToNext());
         }
 
         cursor.close();
         db.close();
         return taskList;
-    }
-
-
-    // Xóa công việc khỏi cơ sở dữ liệu
-    public void deleteTask(Task task) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_TASKS, COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(task.getId())});
-        db.close();
-        Log.d("DatabaseHelper", "Deleted task with ID: " + task.getId());
-
-        deleteAllSubtasksOf(task);
     }
 
     // Lấy danh sách công việc từ cơ sở dữ liệu
@@ -276,6 +261,75 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return taskList;
     }
+
+    // Lấy danh sách các công việc hoàn thành và đã hết hạn
+    public List<Task> getCompletedTasks() {
+        List<Task> taskList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Truy vấn dữ liệu chỉ lấy các công việc hoàn thành
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TASKS + " WHERE " + COLUMN_TASK_IS_COMPLETED + " = 1", null);
+        Log.d("DatabaseHelper", "Query result count: " + cursor.getCount());
+
+        // Kiểm tra xem các cột có tồn tại không
+        int columnTaskId = cursor.getColumnIndex(COLUMN_TASK_ID);
+        int columnTaskName = cursor.getColumnIndex(COLUMN_TASK_NAME);
+        int columnTaskDescription = cursor.getColumnIndex(COLUMN_TASK_DESCRIPTION);
+        int columnTaskCreationDate = cursor.getColumnIndex(COLUMN_TASK_CREATION_DATE);
+        int columnTaskDueDate = cursor.getColumnIndex(COLUMN_TASK_DUE_DATE);
+        int columnTaskIsCompleted = cursor.getColumnIndex(COLUMN_TASK_IS_COMPLETED);
+        int columnTaskIsFavorite = cursor.getColumnIndex(COLUMN_TASK_IS_FAVORITE);
+
+        if (columnTaskId == -1 || columnTaskName == -1 || columnTaskDescription == -1 ||
+                columnTaskCreationDate == -1 || columnTaskDueDate == -1 || columnTaskIsCompleted == -1 || columnTaskIsFavorite == -1) {
+            cursor.close();
+            db.close();
+            return taskList;
+        }
+
+        long currentTime = System.currentTimeMillis();  // Thời gian hiện tại
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(columnTaskId);
+                String name = cursor.getString(columnTaskName);
+                String description = cursor.getString(columnTaskDescription);
+                String creationDate = cursor.getString(columnTaskCreationDate);
+                String dueDate = cursor.getString(columnTaskDueDate);
+                boolean isCompleted = cursor.getInt(columnTaskIsCompleted) == 1;
+                boolean isFavorite = cursor.getInt(columnTaskIsFavorite) == 1;
+
+                // Chuyển đổi ngày hết hạn thành long để so sánh
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                Date dueDateObject = null;
+                try {
+                    dueDateObject = sdf.parse(dueDate);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                // Kiểm tra nếu công việc đã hoàn thành và đã hết hạn
+                if (dueDateObject != null && isCompleted && dueDateObject.getTime() < currentTime) {
+                    // Nếu công việc đã hoàn thành và đã hết hạn, thêm vào danh sách
+                    Task task = new Task(id, name, description, isCompleted, creationDate, dueDate, isFavorite);
+                    taskList.add(task);
+                }
+
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        // Nếu không có công việc nào thỏa mãn điều kiện, trả về danh sách rỗng
+        if (taskList.isEmpty()) {
+            Log.d("DatabaseHelper", "No completed tasks found that are overdue.");
+        }
+
+        return taskList;
+    }
+
+
 
     // Thêm công việc con mới vào cơ sở dữ liệu
     public boolean insertSubtask(int taskId, String subtaskDescription) {
@@ -372,7 +426,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Kiểm tra đăng nhập
     public boolean checkUser(String username, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USER_NAME + " = ? AND " + COLUMN_USER_PASSWORD + " = ?";
+        String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USER_NAME
+                                        + " = ? AND " + COLUMN_USER_PASSWORD + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{username, password});
         boolean exists = cursor.getCount() > 0;
         cursor.close();
@@ -415,58 +470,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    // Lấy danh sách các công việc yêu thích
-    public List<Task> getFavoriteTasks() {
-        List<Task> taskList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
 
-        // Truy vấn dữ liệu chỉ lấy các công việc yêu thích
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TASKS + " WHERE " + COLUMN_TASK_IS_FAVORITE + " = 1", null);
-        Log.d("DatabaseHelper", "Query result count: " + cursor.getCount());
-
-        // Kiểm tra xem các cột có tồn tại không
-        int columnTaskId = cursor.getColumnIndex(COLUMN_TASK_ID);
-        int columnTaskName = cursor.getColumnIndex(COLUMN_TASK_NAME);
-        int columnTaskDescription = cursor.getColumnIndex(COLUMN_TASK_DESCRIPTION);
-        int columnTaskCreationDate = cursor.getColumnIndex(COLUMN_TASK_CREATION_DATE);
-        int columnTaskDueDate = cursor.getColumnIndex(COLUMN_TASK_DUE_DATE);
-        int columnTaskIsCompleted = cursor.getColumnIndex(COLUMN_TASK_IS_COMPLETED);
-        int columnTaskIsFavorite = cursor.getColumnIndex(COLUMN_TASK_IS_FAVORITE);
-
-        if (columnTaskId == -1 || columnTaskName == -1 || columnTaskDescription == -1 ||
-                columnTaskCreationDate == -1 || columnTaskDueDate == -1 || columnTaskIsCompleted == -1 || columnTaskIsFavorite == -1) {
-            cursor.close();
-            db.close();
-            return taskList;
-        }
-
-        if (cursor.moveToFirst()) {
-            do {
-                int id = cursor.getInt(columnTaskId);
-                String name = cursor.getString(columnTaskName);
-                String description = cursor.getString(columnTaskDescription);
-                String creationDate = cursor.getString(columnTaskCreationDate);
-                String dueDate = cursor.getString(columnTaskDueDate);
-                boolean isCompleted = cursor.getInt(columnTaskIsCompleted) == 1;
-                boolean isFavorite = cursor.getInt(columnTaskIsFavorite) == 1;
-
-                // Tạo đối tượng Task và thêm vào danh sách
-                Task task = new Task(id, name, description, isCompleted, creationDate, dueDate, isFavorite);
-                taskList.add(task);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        db.close();
-        return taskList;
-    }
 
     // Lấy các công việc chưa đến hạn
     public List<Task> getUpcomingTasks() {
         List<Task> taskList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        // Truy vấn lấy tất cả công việc
+        // Truy vấn lấy tất cả công việc (bao gồm cột isFavorite)
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TASKS, null);
         Log.d("DatabaseHelper", "Query result count: " + cursor.getCount());
 
@@ -476,9 +487,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int columnTaskCreationDate = cursor.getColumnIndex(COLUMN_TASK_CREATION_DATE);
         int columnTaskDueDate = cursor.getColumnIndex(COLUMN_TASK_DUE_DATE);
         int columnTaskIsCompleted = cursor.getColumnIndex(COLUMN_TASK_IS_COMPLETED);
+        int columnTaskIsFavorite = cursor.getColumnIndex(COLUMN_TASK_IS_FAVORITE);  // Lấy cột isFavorite
 
         if (columnTaskId == -1 || columnTaskName == -1 || columnTaskDescription == -1 ||
-                columnTaskCreationDate == -1 || columnTaskDueDate == -1 || columnTaskIsCompleted == -1) {
+                columnTaskCreationDate == -1 || columnTaskDueDate == -1 || columnTaskIsCompleted == -1 || columnTaskIsFavorite == -1) {
             cursor.close();
             db.close();
             return taskList;
@@ -494,6 +506,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String creationDate = cursor.getString(columnTaskCreationDate);
                 String dueDate = cursor.getString(columnTaskDueDate);
                 boolean isCompleted = cursor.getInt(columnTaskIsCompleted) == 1;
+                boolean isFavorite = cursor.getInt(columnTaskIsFavorite) == 1;  // Kiểm tra công việc yêu thích
 
                 // Chuyển đổi ngày hết hạn thành long để so sánh
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -504,10 +517,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     e.printStackTrace();
                 }
 
-                // Kiểm tra nếu công việc chưa đến hạn và chưa hoàn thành
-                if (dueDateObject != null && dueDateObject.getTime() > currentTime && !isCompleted) {
-                    // Nếu công việc chưa đến hạn và chưa hoàn thành, thêm vào danh sách
-                    Task task = new Task(id, name, description, isCompleted, creationDate, dueDate, false);
+                // Kiểm tra nếu công việc chưa đến hạn và chưa hoàn thành, hoặc công việc yêu thích
+                if (dueDateObject != null && (!isCompleted || isFavorite) && dueDateObject.getTime() > currentTime) {
+                    // Nếu công việc chưa đến hạn và chưa hoàn thành, hoặc là công việc yêu thích, thêm vào danh sách
+                    Task task = new Task(id, name, description, isCompleted, creationDate, dueDate, isFavorite);
                     taskList.add(task);
                 }
 
@@ -518,6 +531,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return taskList;
     }
+
 
     // Thêm công việc vào mục hoàn thành
     public void addTaskToCompleted(Task task) {
@@ -537,52 +551,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_TASK_IS_COMPLETED, 0);  // Đánh dấu là chưa hoàn thành
         db.update(TABLE_TASKS, values, COLUMN_TASK_ID + " = ?", new String[]{String.valueOf(task.getId())});
         db.close();
-    }
-
-    // Lấy danh sách các công việc hoàn thành
-    public List<Task> getCompletedTasks() {
-        List<Task> taskList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        // Truy vấn dữ liệu chỉ lấy các công việc hoàn thành
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_TASKS + " WHERE " + COLUMN_TASK_IS_COMPLETED + " = 1", null);
-        Log.d("DatabaseHelper", "Query result count: " + cursor.getCount());
-
-        // Kiểm tra xem các cột có tồn tại không
-        int columnTaskId = cursor.getColumnIndex(COLUMN_TASK_ID);
-        int columnTaskName = cursor.getColumnIndex(COLUMN_TASK_NAME);
-        int columnTaskDescription = cursor.getColumnIndex(COLUMN_TASK_DESCRIPTION);
-        int columnTaskCreationDate = cursor.getColumnIndex(COLUMN_TASK_CREATION_DATE);
-        int columnTaskDueDate = cursor.getColumnIndex(COLUMN_TASK_DUE_DATE);
-        int columnTaskIsCompleted = cursor.getColumnIndex(COLUMN_TASK_IS_COMPLETED);
-        int columnTaskIsFavorite = cursor.getColumnIndex(COLUMN_TASK_IS_FAVORITE);
-
-        if (columnTaskId == -1 || columnTaskName == -1 || columnTaskDescription == -1 ||
-                columnTaskCreationDate == -1 || columnTaskDueDate == -1 || columnTaskIsCompleted == -1 || columnTaskIsFavorite == -1) {
-            cursor.close();
-            db.close();
-            return taskList;
-        }
-
-        if (cursor.moveToFirst()) {
-            do {
-                int id = cursor.getInt(columnTaskId);
-                String name = cursor.getString(columnTaskName);
-                String description = cursor.getString(columnTaskDescription);
-                String creationDate = cursor.getString(columnTaskCreationDate);
-                String dueDate = cursor.getString(columnTaskDueDate);
-                boolean isCompleted = cursor.getInt(columnTaskIsCompleted) == 1;
-                boolean isFavorite = cursor.getInt(columnTaskIsFavorite) == 1;
-
-                // Tạo đối tượng Task và thêm vào danh sách
-                Task task = new Task(id, name, description, isCompleted, creationDate, dueDate, isFavorite);
-                taskList.add(task);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        db.close();
-        return taskList;
     }
 
     // Thêm công việc con vào mục hoàn thành
