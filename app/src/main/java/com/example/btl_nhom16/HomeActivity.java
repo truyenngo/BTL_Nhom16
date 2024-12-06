@@ -34,7 +34,7 @@ public class HomeActivity extends AppCompatActivity {
     private TaskAdapter taskAdapter;
     private List<Task> taskList;
     private DatabaseHelper databaseHelper;
-    private ImageView favoritesButton, homeButton, completedTasksButton, notificationSettingsButton, logoutButton;
+    private ImageView favoritesButton, homeButton, completedTasksButton, notificationSettingsButton, logoutButton, logoIcon;
     private LinearLayout notificationSettingsLayout;
     private EditText timeBeforeDeadlineEditText;
     private Button saveTimeBeforeDeadlineButton;
@@ -52,7 +52,11 @@ public class HomeActivity extends AppCompatActivity {
 
         // Lấy thời gian đã lưu và hiển thị
         loadSavedTime();
-
+        logoIcon.setOnClickListener(view -> {
+            switchToTasksView();
+            loadTasks();
+            headerTitle.setText("Tất cả công việc");
+        });
         // Xử lý các nút điều hướng
         homeButton.setOnClickListener(view -> {
             switchToTasksView();
@@ -85,9 +89,8 @@ public class HomeActivity extends AppCompatActivity {
         recyclerViewTasks.setAdapter(taskAdapter);
 
         addTask();
-        loadTasks();
         logout();
-
+        loadTasks();
         selectTimeButton.setOnClickListener(v -> showTimePickerDialog());
     }
 
@@ -103,6 +106,8 @@ public class HomeActivity extends AppCompatActivity {
         completedTasksButton = findViewById(R.id.completedTasksButton);  // Nút Hoàn thành
         notificationSettingsButton = findViewById(R.id.notificationSettingsButton);  // Nút Cài đặt thông báo
         headerTitle = findViewById(R.id.headerTitle);
+
+        logoIcon = findViewById(R.id.logoIcon);
     }
 
     public void logout() {
@@ -140,60 +145,84 @@ public class HomeActivity extends AppCompatActivity {
 
     // Lấy các công việc chưa đến hạn
     public void loadTasks() {
-        List<Task> tasks = databaseHelper.getAllTasks();
-        if (tasks != null && !tasks.isEmpty()) {
-            taskAdapter.updateList(tasks);
+        hideAllNoTasksMessages();
+        // 1. Làm trống danh sách công việc trong RecyclerView
+        taskList.clear();
+        taskAdapter.notifyDataSetChanged();
+
+        // 2. Lấy danh sách các công việc sắp đến hạn từ cơ sở dữ liệu
+        List<Task> upcomingTasks = databaseHelper.getAllTasks();
+
+        // 3. Kiểm tra xem có công việc nào không
+        if (upcomingTasks.isEmpty()) {
+            findViewById(R.id.noTasksText).setVisibility(View.VISIBLE);
         } else {
-            Toast.makeText(this, "No tasks found", Toast.LENGTH_SHORT).show();
+            taskList.addAll(upcomingTasks);  // Thêm công việc sắp đến hạn vào danh sách
+            taskAdapter.notifyDataSetChanged();  // Cập nhật RecyclerView với dữ liệu mới
+            findViewById(R.id.noTasksText).setVisibility(View.GONE);
         }
     }
 
     // Lấy danh sách các công việc chưa đến hạn
     private void loadUpcomingTasks() {
-        hideAllNoTasksMessages();  // Ẩn tất cả các thông báo "No tasks"
+        hideAllNoTasksMessages();
+        // 1. Làm trống danh sách công việc trong RecyclerView
+        taskList.clear();
+        taskAdapter.notifyDataSetChanged(); // Cập nhật RecyclerView với dữ liệu trống
 
+        // 2. Lấy danh sách các công việc sắp đến hạn từ cơ sở dữ liệu
         List<Task> upcomingTasks = databaseHelper.getUpcomingTasks();
 
+        // 3. Kiểm tra xem có công việc nào không
         if (upcomingTasks.isEmpty()) {
-            findViewById(R.id.noUpcomingTasksText).setVisibility(View.VISIBLE);  // Hiển thị "No upcoming tasks"
+            findViewById(R.id.noUpcomingTasksText).setVisibility(View.VISIBLE);
         } else {
-            recyclerViewTasks.setVisibility(View.VISIBLE);
-            findViewById(R.id.noUpcomingTasksText).setVisibility(View.GONE);  // Ẩn thông báo
-            taskAdapter.updateList(upcomingTasks);
+            taskList.addAll(upcomingTasks);  // Thêm công việc sắp đến hạn vào danh sách
+            taskAdapter.notifyDataSetChanged();  // Cập nhật RecyclerView với dữ liệu mới
+            findViewById(R.id.noUpcomingTasksText).setVisibility(View.GONE);
         }
     }
 
 
     // Lấy danh sách các công việc yêu thích
     private void loadFavoriteTasks() {
-        hideAllNoTasksMessages();  // Ẩn tất cả các thông báo "No tasks"
+        hideAllNoTasksMessages();
+        // 1. Làm trống danh sách công việc trong RecyclerView
+        taskList.clear();
+        taskAdapter.notifyDataSetChanged(); // Cập nhật RecyclerView với dữ liệu trống
 
-        List<Task> favoriteTasks = databaseHelper.getFavoriteTasks();
+        // 2. Lấy danh sách các công việc sắp đến hạn từ cơ sở dữ liệu
+        List<Task> upcomingTasks = databaseHelper.getFavoriteTasks();
 
-        if (favoriteTasks.isEmpty()) {
-            findViewById(R.id.noFavoriteTasksText).setVisibility(View.VISIBLE);  // Hiển thị "No favorite tasks"
+        // 3. Kiểm tra xem có công việc nào không
+        if (upcomingTasks.isEmpty()) {
+            findViewById(R.id.noFavoriteTasksText).setVisibility(View.VISIBLE);
         } else {
-            recyclerViewTasks.setVisibility(View.VISIBLE);
-            findViewById(R.id.noFavoriteTasksText).setVisibility(View.GONE);  // Ẩn thông báo
-            taskAdapter.updateList(favoriteTasks);
+            taskList.addAll(upcomingTasks);  // Thêm công việc sắp đến hạn vào danh sách
+            taskAdapter.notifyDataSetChanged();  // Cập nhật RecyclerView với dữ liệu mới
+            findViewById(R.id.noFavoriteTasksText).setVisibility(View.GONE);
         }
     }
 
     // Lấy danh sách các công việc hoàn thành
     private void loadCompletedTasks() {
-        hideAllNoTasksMessages();  // Ẩn tất cả các thông báo "No tasks"
+        hideAllNoTasksMessages();
+        // 1. Làm trống danh sách công việc trong RecyclerView
+        taskList.clear();
+        taskAdapter.notifyDataSetChanged();
 
-        List<Task> completedTasks = databaseHelper.getCompletedTasks();
+        // 2. Lấy danh sách các công việc sắp đến hạn từ cơ sở dữ liệu
+        List<Task> upcomingTasks = databaseHelper.getCompletedTasks();
 
-        if (completedTasks.isEmpty()) {
-            findViewById(R.id.noCompletedTasksText).setVisibility(View.VISIBLE);  // Hiển thị "No completed tasks"
+        // 3. Kiểm tra xem có công việc nào không
+        if (upcomingTasks.isEmpty()) {
+            findViewById(R.id.noCompletedTasksText).setVisibility(View.VISIBLE);
         } else {
-            recyclerViewTasks.setVisibility(View.VISIBLE);
-            findViewById(R.id.noCompletedTasksText).setVisibility(View.GONE);  // Ẩn thông báo
-            taskAdapter.updateList(completedTasks);
+            taskList.addAll(upcomingTasks);  // Thêm công việc sắp đến hạn vào danh sách
+            taskAdapter.notifyDataSetChanged();
+            findViewById(R.id.noCompletedTasksText).setVisibility(View.GONE);
         }
     }
-
 
     @Override
     protected void onResume() {
@@ -219,11 +248,13 @@ public class HomeActivity extends AppCompatActivity {
                 (view, hourOfDay, minute) -> {
                     selectedHour = hourOfDay;
                     selectedMinute = minute;
-                    selectedTimeText.setText(String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute));
+                    selectedTimeText.setText(String.format(Locale.getDefault(),
+                            "%02d:%02d", selectedHour, selectedMinute));
 
                     // Lưu thời gian đã chọn và đặt thông báo
                     setDailyNotification(HomeActivity.this, selectedHour, selectedMinute);
-                    Toast.makeText(HomeActivity.this, "Đã lưu thời gian thông báo hàng ngày!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(HomeActivity.this,
+                            "Đã lưu thời gian thông báo hàng ngày!", Toast.LENGTH_SHORT).show();
                 },
                 selectedHour, selectedMinute, true // Giờ và phút mặc định
         );
@@ -280,10 +311,14 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void hideAllNoTasksMessages() {
+        // Ẩn tất cả thông báo "No tasks"
         findViewById(R.id.noCompletedTasksText).setVisibility(View.GONE);
         findViewById(R.id.noFavoriteTasksText).setVisibility(View.GONE);
         findViewById(R.id.noUpcomingTasksText).setVisibility(View.GONE);
-        recyclerViewTasks.setVisibility(View.GONE);
+
+        // Hiển thị RecyclerView để chứa danh sách công việc
+        recyclerViewTasks.setVisibility(View.VISIBLE);
     }
+
 
 }

@@ -57,6 +57,14 @@
         android:layout_marginBottom="16dp"/>
 
     <TextView
+        android:id="@+id/noTasksText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No tasks available"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/> <!-- Ẩn ban đầu -->
+
+    <TextView
         android:id="@+id/noCompletedTasksText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -127,9 +127,11 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         return taskList.size();
     }
 
-    public void updateList(List<Task> newTaskList) {
-        taskList = newTaskList;
-        notifyDataSetChanged();
+    // Trong TaskAdapter
+    public void updateList(List<Task> newTasks) {
+        taskList.clear(); // Xóa danh sách công việc cũ
+        taskList.addAll(newTasks); // Thêm danh sách công việc mới
+        notifyDataSetChanged(); // Cập nhật RecyclerView
     }
 
     public static class TaskViewHolder extends RecyclerView.ViewHolder {
