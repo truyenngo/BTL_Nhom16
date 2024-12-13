@@ -29,12 +29,9 @@ public class DetailTaskActivity extends AddTaskActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_task);
-
-        // Khởi tạo tất cả các thành phần giao diện
         InitAllCommonViewElements();
-
         Init_Task();
-        // Cấu hình RecyclerView và Adapter sau khi khởi tạo task
+
         recyclerViewSubtasks = findViewById(R.id.recyclerViewSubtasks);
         recyclerViewSubtasks.setLayoutManager(new LinearLayoutManager(this));
         subtaskAdapter = new SubtaskAdapter(curTask, DetailTaskActivity.this, databaseHelper.getAllSubtasksOf(curTask), databaseHelper);
@@ -55,7 +52,6 @@ public class DetailTaskActivity extends AddTaskActivity {
                 .findFirst().orElse(null);
         if (curTask == null) return;
 
-        // Cập nhật dữ liệu hiển thị
         editTextTaskName.setText(curTask.getName());
         editTextTaskDescription.setText(curTask.getDescription());
         textViewStartDate.setText(curTask.getCreationDate());
@@ -72,16 +68,13 @@ public class DetailTaskActivity extends AddTaskActivity {
                 return;
             }
 
-            // Kiểm tra xem ngày bắt đầu có sau ngày đến hạn không
             if (startCalendar.after(dueCalendar)) {
                 Toast.makeText(this, "Start date must be before due date", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Lưu công việc vào database
             boolean isUpdated = databaseHelper.updateTask(curTask.getId(), taskName, taskDescription, startCalendar.getTimeInMillis(), dueCalendar.getTimeInMillis());
             if (isUpdated) {
-                // Truy vấn để xác nhận công việc có trong cơ sở dữ liệu
                 List<Task> tasks = databaseHelper.getAllTasks();
                 Log.d("DetailTaskActivity", "Tasks after Update: " + tasks.size());
                 Toast.makeText(this, "Task updated successfully", Toast.LENGTH_SHORT).show();
@@ -89,7 +82,6 @@ public class DetailTaskActivity extends AddTaskActivity {
                 Toast.makeText(this, "Error adding task", Toast.LENGTH_SHORT).show();
             }
 
-            // Lưu tất cả các subtask vào database
             for (int i = 0; i < subtaskAdapter.getItemCount(); ++i) {
                 SubtaskAdapter.SubtaskViewHolder holder = ((SubtaskAdapter.SubtaskViewHolder)recyclerViewSubtasks.findViewHolderForLayoutPosition(i));
                 Subtask subtask = subtaskAdapter.getSubtaskList().get(i);
@@ -100,18 +92,12 @@ public class DetailTaskActivity extends AddTaskActivity {
     private void Init_DeleteBtn() {
         m_DeleteBtn = findViewById(R.id.trashIcon);
         m_DeleteBtn.setOnClickListener(view -> {
-            // Hiển thị hộp thoại xác nhận
             new AlertDialog.Builder(this)
                 .setTitle("Delete Task")
                 .setMessage("Are you sure you want to delete this task?")
                 .setPositiveButton("Yes", (dialog, which) -> {
-                    // Xóa task khỏi cơ sở dữ liệu
                     databaseHelper.deleteTask(curTask);
-
-                    // Hiển thị thông báo
                     Toast.makeText(this, "Task deleted", Toast.LENGTH_SHORT).show();
-
-                    // điều hướng trở lại màn hình chính
                     Intent intent = new Intent(DetailTaskActivity.this, HomeActivity.class);
                     startActivity(intent);
                 })
@@ -155,8 +141,6 @@ public class DetailTaskActivity extends AddTaskActivity {
             if (newDoneStatus) {
                 m_ToggleDoneBtn.setImageResource(R.drawable.ic_done_filled);
                 databaseHelper.addTaskToCompleted(curTask);
-
-                // reload lại task con
                 subtaskAdapter.updateList(databaseHelper.getAllSubtasksOf(curTask));
             } else {
                 m_ToggleDoneBtn.setImageResource(R.drawable.ic_done_empty);

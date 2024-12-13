@@ -13,7 +13,6 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <!-- Icon hoàn thành (done) -->
         <ImageView
             android:id="@+id/subtaskDoneIcon"
             android:layout_width="50dp"
@@ -23,7 +22,6 @@
             android:layout_marginHorizontal="5dp"
             android:src="@drawable/ic_done_empty" />
 
-        <!-- Mô tả công việc -->
         <EditText
             android:id="@+id/editTextSubtaskDescription"
             android:layout_width="match_parent"
@@ -33,7 +31,6 @@
             android:layout_marginHorizontal="5dp"
             android:inputType="textMultiLine" />
 
-        <!-- Icon thùng rác (trash) -->
         <ImageView
             android:id="@+id/subtaskTrashIcon"
             android:layout_width="50dp"

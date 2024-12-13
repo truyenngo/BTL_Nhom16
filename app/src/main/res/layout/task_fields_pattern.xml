@@ -5,7 +5,6 @@
     android:backgroundTint="#FF9800"
     android:orientation="vertical">
 
-    <!-- Tên công việc -->
     <EditText
         android:id="@+id/editTextTaskName"
         android:layout_width="match_parent"
@@ -15,7 +14,6 @@
         android:background="@drawable/button_border"
         android:paddingLeft="15dp"/>
 
-    <!-- Mô tả công việc -->
     <EditText
         android:id="@+id/editTextTaskDescription"
         android:layout_width="match_parent"
@@ -26,7 +24,6 @@
         android:background="@drawable/button_border"
         android:paddingLeft="15dp"/>
 
-    <!-- Ngày bắt đầu -->
     <TextView
         android:id="@+id/textViewStartDate"
         android:layout_width="match_parent"
@@ -39,7 +36,6 @@
         android:padding="15dp"
         android:textColor="@android:color/darker_gray" />
 
-    <!-- Ngày hạn hoàn thành -->
     <TextView
         android:id="@+id/textViewDueDate"
         android:layout_width="match_parent"

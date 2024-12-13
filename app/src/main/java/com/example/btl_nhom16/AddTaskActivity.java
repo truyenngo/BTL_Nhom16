@@ -30,7 +30,7 @@ public class AddTaskActivity extends AppCompatActivity {
     protected Calendar dueCalendar = Calendar.getInstance();
 
     protected void InitAllCommonViewElements() {
-        // Khởi tạo các view
+
         editTextTaskName = findViewById(R.id.editTextTaskName);
         editTextTaskDescription = findViewById(R.id.editTextTaskDescription);
         textViewStartDate = findViewById(R.id.textViewStartDate);
@@ -38,10 +38,7 @@ public class AddTaskActivity extends AppCompatActivity {
         buttonSaveTask = findViewById(R.id.buttonSaveTask);
         databaseHelper = new DatabaseHelper(this);
 
-        // Thiết lập sự kiện cho chọn ngày bắt đầu
         textViewStartDate.setOnClickListener(v -> showDatePickerDialog(startCalendar, textViewStartDate));
-
-        // Thiết lập sự kiện cho chọn ngày hạn hoàn thành
         textViewDueDate.setOnClickListener(v -> showDatePickerDialog(dueCalendar, textViewDueDate));
     }
 
@@ -49,15 +46,10 @@ public class AddTaskActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
-
-        // Khởi tạo tất cả các thành phần giao diện (chuyển vào hàm để kế thừa cho dễ)
         InitAllCommonViewElements();
-
-        // Thiết lập sự kiện cho nút lưu công việc
         buttonSaveTask.setOnClickListener(v -> saveTask());
     }
 
-    // Hiển thị DatePicker
     protected void showDatePickerDialog(Calendar calendar, TextView textView) {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -68,14 +60,12 @@ public class AddTaskActivity extends AppCompatActivity {
             calendar.set(Calendar.YEAR, selectedYear);
             calendar.set(Calendar.MONTH, selectedMonth);
             calendar.set(Calendar.DAY_OF_MONTH, selectedDay);
-            textView.setText(getFormattedDate(calendar));  // Hiển thị ngày đã chọn
-            showTimePickerDialog(calendar, textView);  // Mở TimePicker sau khi chọn ngày
+            textView.setText(getFormattedDate(calendar));
+            showTimePickerDialog(calendar, textView);
         }, year, month, day);
-
         datePickerDialog.show();
     }
 
-    // Hiển thị TimePicker
     protected void showTimePickerDialog(Calendar calendar, TextView textView) {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
@@ -86,11 +76,9 @@ public class AddTaskActivity extends AppCompatActivity {
             calendar.set(Calendar.MINUTE, selectedMinute);
             textView.setText(getFormattedDate_InMillis(calendar));
         }, hour, minute, true);
-
         timePickerDialog.show();
     }
 
-    // Định dạng ngày tháng
     protected String getFormattedDate(Calendar calendar) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         return sdf.format(calendar.getTime());
@@ -101,7 +89,6 @@ public class AddTaskActivity extends AppCompatActivity {
                 calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
     }
 
-    // Lưu công việc vào cơ sở dữ liệu
     protected void saveTask() {
         String taskName = editTextTaskName.getText().toString().trim();
         String taskDescription = editTextTaskDescription.getText().toString().trim();
@@ -109,17 +96,17 @@ public class AddTaskActivity extends AppCompatActivity {
             editTextTaskName.setError("Task name is required");
             return;
         }
-        // Kiểm tra xem ngày bắt đầu có sau ngày đến hạn không
+
         if (startCalendar.after(dueCalendar)) {
             Toast.makeText(this, "Start date must be before due date",
                     Toast.LENGTH_SHORT).show();
             return;
         }
-        // Lưu công việc vào database
+
         boolean isInserted = databaseHelper.insertTask(taskName, taskDescription,
                 startCalendar.getTimeInMillis(), dueCalendar.getTimeInMillis());
+
         if (isInserted) {
-            // Truy vấn để xác nhận công việc có trong cơ sở dữ liệu
             List<Task> tasks = databaseHelper.getAllTasks();
             Log.d("AddTaskActivity", "Tasks after insert: " + tasks.size());
             Toast.makeText(this, "Task added successfully", Toast.LENGTH_SHORT).show();

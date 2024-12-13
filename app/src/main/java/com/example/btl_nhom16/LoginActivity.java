@@ -31,11 +31,11 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextPassword);
         databaseHelper = new DatabaseHelper(this);
 
-        btnDeleteData = findViewById(R.id.btnDeleteData); // Lấy đối tượng nút
+        btnDeleteData = findViewById(R.id.btnDeleteData);
         btnDeleteData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteDatabaseData(); // Gọi phương thức để xóa dữ liệu
+                deleteDatabaseData();
             }
         });
     }
@@ -44,7 +44,6 @@ public class LoginActivity extends AppCompatActivity {
         String username = editTextUsername.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
-        // Kiểm tra tên người dùng và mật khẩu
         Log.d("LoginActivity", "Username: " + username);
         Log.d("LoginActivity", "Password: " + password);
 
@@ -62,21 +61,16 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    // Phương thức để chuyển sang màn hình đăng ký
     public void goToRegister(View view) {
         Intent intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
     }
 
-    // Phương thức xóa dữ liệu
     private void deleteDatabaseData() {
-        // Xóa tất cả dữ liệu trong bảng tasks và users
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         db.execSQL("DELETE FROM " + DatabaseHelper.TABLE_TASKS);
         db.execSQL("DELETE FROM " + DatabaseHelper.TABLE_USERS);
         db.close();
-
-        // Hiển thị thông báo
         Toast.makeText(this, "All data has been deleted.", Toast.LENGTH_SHORT).show();
     }
 

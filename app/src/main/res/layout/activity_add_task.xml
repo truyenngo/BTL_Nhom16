@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <!-- Nút lưu công việc -->
     <Button
         android:id="@+id/buttonSaveTask"
         android:layout_width="wrap_content"

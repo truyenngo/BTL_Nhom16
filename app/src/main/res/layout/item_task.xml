@@ -13,7 +13,6 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <!-- Icon hoàn thành (done) -->
         <ImageView
             android:id="@+id/doneIcon"
             android:layout_width="50dp"
@@ -31,7 +30,6 @@
             android:paddingTop="15dp"
             android:paddingBottom="15dp">
 
-            <!-- Tên công việc -->
             <TextView
                 android:id="@+id/taskName"
                 android:layout_width="match_parent"
@@ -41,7 +39,6 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <!-- Mô tả công việc -->
             <TextView
                 android:id="@+id/taskDescription"
                 android:layout_width="match_parent"
@@ -50,7 +47,6 @@
                 android:text="Task Description"
                 android:textSize="14sp" />
 
-            <!-- Ngày đến hạn công việc -->
             <TextView
                 android:id="@+id/taskDueDate"
                 android:layout_width="match_parent"
@@ -60,7 +56,6 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
-        <!-- Icon yêu thích (star) -->
         <ImageView
             android:id="@+id/favoriteIcon"
             android:layout_width="50dp"

@@ -10,18 +10,15 @@ import androidx.core.app.NotificationCompat;
 public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        // Tạo thông báo
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "dailyNotification")
-                .setSmallIcon(R.drawable.ic_notification) // Icon thông báo
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle("Nhắc nhở công việc")
                 .setContentText("Đã đến giờ bạn cần làm công việc quan trọng!")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true);
 
-        // Hiển thị thông báo
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        // Tạo kênh thông báo (chỉ cần tạo một lần)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     "dailyNotification",

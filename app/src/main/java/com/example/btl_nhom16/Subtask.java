@@ -13,7 +13,6 @@ public class Subtask {
         this.isCompleted = isCompleted;
     }
 
-    // Getters and Setters
     public int getId() { return id; }
     public int getTask_id() { return task_id; }
     public String getDescription() { return description; }

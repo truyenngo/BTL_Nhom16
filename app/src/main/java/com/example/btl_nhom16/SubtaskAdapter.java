@@ -17,7 +17,7 @@ import java.util.List;
 
 public class SubtaskAdapter extends RecyclerView.Adapter<SubtaskAdapter.SubtaskViewHolder> {
     private List<Subtask> subtaskList;
-    private DatabaseHelper databaseHelper;// Cần DatabaseHelper để cập nhật dữ liệu
+    private DatabaseHelper databaseHelper;
     private Context parentContext;
     private Task curTask;
     public List<Subtask> getSubtaskList() { return subtaskList; }
@@ -39,7 +39,6 @@ public class SubtaskAdapter extends RecyclerView.Adapter<SubtaskAdapter.SubtaskV
     public void onBindViewHolder(SubtaskViewHolder holder, int position) {
         Subtask subtask = subtaskList.get(position);
 
-        // Cập nhật dữ liệu hiển thị
         holder.taskDescription.setText(subtask.getDescription());
         if (subtask.isCompleted()) {
             holder.doneIcon.setImageResource(R.drawable.ic_done_filled);
@@ -60,19 +59,13 @@ public class SubtaskAdapter extends RecyclerView.Adapter<SubtaskAdapter.SubtaskV
         });
 
         holder.trashIcon.setOnClickListener(view -> {
-            // Hiển thị hộp thoại xác nhận
             new AlertDialog.Builder(parentContext)
                     .setTitle("Delete Task")
                     .setMessage("Are you sure you want to delete this subtask?")
                     .setPositiveButton("Yes", (dialog, which) -> {
-                        // Xóa task khỏi cơ sở dữ liệu
                         databaseHelper.deleteSubtask(subtask);
-
                         updateList(databaseHelper.getAllSubtasksOf(curTask));
-
-                        // Hiển thị thông báo
                         Toast.makeText(parentContext, "Subtask deleted", Toast.LENGTH_SHORT).show();
-
                     })
                     .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
                     .show();
@@ -97,8 +90,8 @@ public class SubtaskAdapter extends RecyclerView.Adapter<SubtaskAdapter.SubtaskV
 
     public static class SubtaskViewHolder extends RecyclerView.ViewHolder {
         TextView taskDescription;
-        ImageView doneIcon; // Icon done
-        ImageView trashIcon; // Icon thùng rác
+        ImageView doneIcon;
+        ImageView trashIcon;
 
         public SubtaskViewHolder(View itemView) {
             super(itemView);

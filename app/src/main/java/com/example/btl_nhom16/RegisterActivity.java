@@ -39,14 +39,12 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         if (password.equals(confirmPassword)) {
-            // Kiểm tra nếu người dùng đã tồn tại
             if (databaseHelper.checkUser(username, password)) {
                 Toast.makeText(this, "User already exists", Toast.LENGTH_SHORT).show();
             } else {
-                // Thêm người dùng mới vào cơ sở dữ liệu
                 if (databaseHelper.addUser(username, password)) {
                     Toast.makeText(this, "User registered successfully", Toast.LENGTH_SHORT).show();
-                    finish(); // Quay lại màn hình đăng nhập
+                    finish();
                 } else {
                     Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show();
                 }
