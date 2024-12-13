@@ -51,8 +51,7 @@
         android:layout_below="@id/headerLayout"
         android:layout_above="@id/subButtonsLayout"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:visibility="gone" />
+        android:layout_marginBottom="16dp" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -99,7 +98,7 @@
             android:gravity="center"
             android:orientation="vertical"
             android:padding="16dp"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/dailyNotificationTimeLabel"
